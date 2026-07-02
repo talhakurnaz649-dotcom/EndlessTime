@@ -1,0 +1,244 @@
+﻿@model EndlessTime.Model.Entities.User
+
+@{
+    Layout = null;
+    var orders = ViewBag.UserOrders as List<EndlessTime.Model.Entities.Order> ?? new List<EndlessTime.Model.Entities.Order>();
+
+    // Dinamik Sepet Sayacı Çerez Okuyucusu
+    var cartCookie = Context.Request.Cookies["EndlessTime_Cart"];
+    int cartCount = 0;
+    if (!string.IsNullOrEmpty(cartCookie))
+    {
+        cartCount = cartCookie.Split(',', StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+
+    // Veritabanından gelen bu kullanıcıya ait destek mesajları
+    // AccountController'da ViewBag.UserMessages içerisine yüklenecektir.
+    var messages = ViewBag.UserMessages as List<EndlessTime.Model.Entities.ContactMessage> ?? new List<EndlessTime.Model.Entities.ContactMessage>();
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Profilim - Endless Time</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" />
+    <style>
+            body {
+                background-color: #080808;
+                color: #e5e5e5;
+                padding-top: 100px;
+            }
+
+            .navbar-luxury {
+                background-color: rgba(10, 10, 10, 0.95);
+                border-bottom: 2px solid #d4af37;
+                backdrop-filter: blur(10px);
+            }
+
+            .navbar-brand-lux {
+                font-family: Georgia, serif;
+                font-size: 1.8rem;
+                color: #d4af37 !important;
+                text-decoration: none;
+            }
+
+            .btn-gold-lux {
+                background: linear-gradient(135deg, #d4af37, #aa7c11);
+                color: #000 !important;
+                font-weight: bold;
+                border: none;
+            }
+
+            .profile-card {
+                background: rgba(22, 22, 22, 0.9);
+                border: 1px solid rgba(212, 175, 55, 0.25);
+                border-radius: 15px;
+                padding: 35px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            }
+
+            .form-control-luxury {
+                background-color: #1c1c1c !important;
+                border: 1px solid rgba(212,175,55,0.3) !important;
+                color: #fff !important;
+            }
+
+            .table-luxury {
+                background-color: #121212 !important;
+                color: #e0e0e0 !important;
+            }
+
+                .table-luxury th {
+                    color: #d4af37 !important;
+                    border-bottom: 2px solid #d4af37 !important;
+                }
+
+                .table-luxury td {
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+                }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-luxury fixed-top py-3">
+        <div class="container">
+            <a class="navbar-brand-lux" href="/">ENDLESS TIME</a>
+            <div class="d-flex align-items-center gap-2 ms-auto">
+                <a href="/Home/About" class="btn btn-outline-warning">ℹ️ Hakkımızda</a>
+                <a href="/Home/Contact" class="btn btn-outline-warning">✉️ Bize Ulaşın</a>
+                <a href="/Cart/Index" class="btn btn-outline-light">🛒 Sepetim @(cartCount > 0 ? $"({cartCount})" : "")</a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a href="/Account/Profile" class="btn btn-warning text-dark fw-bold">👤 Profilim</a>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                    {
+                        <a href="/Admin/Product/Index" class="btn btn-gold-lux">⚙️ Admin</a>
+                    }
+                    <a href="/Account/Logout" class="btn btn-danger btn-sm">Çıkış 🔒</a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row">
+
+            <!-- Profil Bilgileri Formu -->
+            <div class="col-md-5 mb-5">
+                <div class="profile-card">
+                    <h3 class="text-warning mb-4" style="font-family: Georgia, serif;">👤 Profil Bilgilerim</h3>
+
+                    @if (TempData["ProfileSuccess"] != null)
+                    {
+                        <div class="alert alert-success bg-dark text-success border-success text-center">@TempData["ProfileSuccess"]</div>
+                    }
+
+                    <form action="/Account/UpdateProfile" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label class="text-warning fw-bold mb-1">E-Posta (Değiştirilemez)</label>
+                            <input class="form-control form-control-luxury" value="@Model.Email" readonly style="opacity: 0.6;" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-warning fw-bold mb-1">Ad Soyad</label>
+                            <input name="FullName" value="@Model.FullName" class="form-control form-control-luxury" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-warning fw-bold mb-1">Telefon Numarası</label>
+                            <input name="PhoneNumber" value="@Model.PhoneNumber" class="form-control form-control-luxury" placeholder="Örn: 0555 555 5555" />
+                        </div>
+                        <div class="mb-4">
+                            <label class="text-warning fw-bold mb-1">Teslimat Adresi</label>
+                            <textarea name="Address" rows="3" class="form-control form-control-luxury" placeholder="Açık kargo adresiniz...">@Model.Address</textarea>
+                        </div>
+                        <button type="submit" class="btn text-dark fw-bold w-100" style="background: linear-gradient(135deg, #d4af37, #aa7c11); border:none;">Bilgileri Güncelle 💾</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sağ Taraf: Siparişlerim & Canlı Destek Taleplerim -->
+            <div class="col-md-7">
+
+                <!-- SİPARİŞ GEÇMİŞİ -->
+                <div class="profile-card mb-5">
+                    <h3 class="text-warning mb-4" style="font-family: Georgia, serif;">📦 Sipariş Geçmişim</h3>
+                    @if (orders.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-luxury align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Sipariş No</th>
+                                        <th>Tarih</th>
+                                        <th>Tutar</th>
+                                        <th>Kargo Durumu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in orders)
+                                    {
+                                        var statusBadge = "bg-secondary";
+                                        var statusIcon = "📝";
+
+                                        if (order.Status == "Hazırlanıyor") { statusBadge = "bg-warning text-dark"; statusIcon = "📦"; }
+                                        else if (order.Status == "Yola Çıktı") { statusBadge = "bg-primary text-white"; statusIcon = "🚚"; }
+                                        else if (order.Status == "Teslim Edildi") { statusBadge = "bg-success text-white"; statusIcon = "✅"; }
+
+                                        <tr>
+                                            <td class="fw-bold">#@order.Id</td>
+                                            <td>@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td class="text-success fw-bold">@order.TotalAmount.ToString("N0") TL</td>
+                                            <td><span class="badge @statusBadge">@statusIcon @order.Status</span></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Henüz siparişiniz bulunmamaktadır.</p>
+                    }
+                </div>
+
+                <!-- DESTEK MESAJLARIM VE ALINAN CEVAPLAR (Kargo gibi dinamik takip 🚨) -->
+                <div class="profile-card">
+                    <h3 class="text-warning mb-4" style="font-family: Georgia, serif;">✉️ Destek & Şikayet Mesajlarım</h3>
+                    @if (messages.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-luxury align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Tarih</th>
+                                        <th>Konu / Mesaj</th>
+                                        <th>Cevap Durumu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var msg in messages)
+                                    {
+                                        <tr>
+                                            <td>@msg.SentDate.ToString("dd.MM.yyyy")</td>
+                                            <td>
+                                                <div class="text-warning fw-bold">@msg.Subject</div>
+                                                <div class="small text-white-50">@msg.MessageText</div>
+
+                                                @if (msg.IsReplied)
+                                                {
+                                                    <div class="mt-2 p-2 rounded small" style="background: rgba(40,167,69,0.1); border-left: 2px solid #28a745;">
+                                                        <strong class="text-success d-block">Yönetici Yanıtı:</strong>
+                                                        <span class="text-white fw-bold">@msg.ReplyText</span>
+                                                    </div>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (msg.IsReplied)
+                                                {
+                                                    <span class="badge bg-success">Cevaplandı ✅</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Beklemede ⏳</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Henüz oluşturduğunuz bir destek mesajı bulunmamaktadır.</p>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

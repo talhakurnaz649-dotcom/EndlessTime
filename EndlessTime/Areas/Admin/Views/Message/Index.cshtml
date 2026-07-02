@@ -1,0 +1,191 @@
+﻿@model IEnumerable<EndlessTime.Model.Entities.ContactMessage>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Gelen Kutusu - Endless Time</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" />
+    <style>
+            body {
+                background-color: #0b0b0b;
+                color: #e5e5e5;
+                display: flex;
+            }
+
+            .sidebar {
+                width: 260px;
+                background-color: #111;
+                border-right: 1px solid rgba(212,175,55,0.25);
+                padding: 25px 15px;
+                position: fixed;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .sidebar-brand {
+                font-family: Georgia, serif;
+                font-size: 1.5rem;
+                color: #d4af37;
+                text-align: center;
+                margin-bottom: 35px;
+                letter-spacing: 2px;
+                border-bottom: 1px solid rgba(212,175,55,0.2);
+                padding-bottom: 15px;
+            }
+
+            .sidebar-link {
+                color: #ccc;
+                text-decoration: none;
+                padding: 12px 15px;
+                border-radius: 8px;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+                .sidebar-link:hover, .sidebar-link.active {
+                    background-color: rgba(212,175,55,0.15);
+                    color: #d4af37;
+                    border-left: 3px solid #d4af37;
+                }
+
+            .main-content {
+                margin-left: 260px;
+                padding: 40px;
+                width: calc(100% - 260px);
+            }
+
+            .panel-card {
+                background-color: #121212;
+                border: 1px solid rgba(212, 175, 55, 0.15);
+                border-radius: 10px;
+                padding: 25px;
+            }
+
+            .table-luxury {
+                background-color: #121212 !important;
+                color: #e0e0e0 !important;
+            }
+
+                .table-luxury th {
+                    color: #d4af37 !important;
+                    border-bottom: 2px solid #d4af37 !important;
+                }
+
+                .table-luxury td {
+                    border-bottom: 1px solid rgba(212,175,55,0.1) !important;
+                }
+    </style>
+</head>
+<body>
+
+    <!-- SOL SABİT MENÜ -->
+    <div class="sidebar">
+        <div class="sidebar-brand">ENDLESS TIME</div>
+        <a href="/Admin/Product/Index" class="sidebar-link">📊 Kontrol Paneli</a>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a href="/Admin/Product/Create" class="sidebar-link">➕ Yeni Saat Ekle</a>
+            <a href="/Admin/User/Index" class="sidebar-link">👥 Kullanıcılar</a>
+        }
+
+        <a href="/Admin/Order" class="sidebar-link">📦 Sipariş Raporları</a>
+        <a href="/Admin/Message" class="sidebar-link active">✉️ Gelen Kutusu</a>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a href="/Admin/Log" class="sidebar-link">⚙️ Sistem Günlükleri</a>
+        }
+
+        <a href="/Home" class="sidebar-link" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">🏠 Mağaza Ön Yüzü</a>
+        <a href="/Account/Logout" class="sidebar-link text-danger">🔒 Çıkış Yap</a>
+    </div>
+
+    <!-- SAĞ PANEL -->
+    <div class="main-content">
+        <div class="mb-5 border-bottom pb-3" style="border-color: rgba(212,175,55,0.2) !important;">
+            <h2 style="font-family: Georgia, serif;">Müşteri İletişim & Şikayet Talepleri</h2>
+            <small class="text-muted">Müşterilerin gönderdiği şikayetleri yanıtlayın.</small>
+        </div>
+
+        <div class="card panel-card p-4">
+            <h4 class="mb-4 text-warning" style="font-family: Georgia, serif;">Gelen Talepler</h4>
+            <div class="table-responsive">
+                <table class="table table-luxury align-middle">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Müşteri Bilgisi</th>
+                            <th>Konu & Mesaj</th>
+                            <th>Cevap Durumu</th>
+                            <th>Cevap Yaz / İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.SentDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>
+                                    <div class="fw-bold">@item.Name</div>
+                                    <div class="small text-muted">@item.Email</div>
+                                </td>
+                                <td>
+                                    <div class="text-warning fw-bold">@item.Subject</div>
+                                    <div class="small">@item.MessageText</div>
+                                </td>
+                                <td>
+                                    @if (item.IsReplied)
+                                    {
+                                        <span class="badge bg-success">Cevaplandı ✅</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Cevap Bekliyor ⏳</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!item.IsReplied)
+                                    {
+                                        <!-- CEVAP YAZMA FORMU 🚨 -->
+                                        <form action="/Admin/Message/Reply" method="post" class="d-flex flex-column gap-2" style="min-width: 250px;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <textarea name="replyText" rows="2" class="form-control form-control-sm" style="background:#222; color:#fff; border:1px solid #d4af37;" placeholder="Cevabınızı buraya yazın..." required></textarea>
+                                            <button type="submit" class="btn btn-sm btn-warning fw-bold text-dark">Cevap Gönder ✉️</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-dark p-2 rounded small" style="border-left: 2px solid #28a745; max-width: 300px;">
+                                            <strong class="text-success d-block">Yazılan Cevap:</strong>
+                                            <span class="text-white-50">@item.ReplyText</span>
+                                        </div>
+                                    }
+
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <form action="/Admin/Message/Delete/@item.Id" method="post" onsubmit="return confirm('Bu mesajı silmek istediğinize emin misiniz?');" class="mt-2">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Kayıttan Sil ❌</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

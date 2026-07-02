@@ -1,0 +1,57 @@
+body {
+    background-color: #0d0d0d;
+    color: #e5e5e5;
+    font-family: 'Inter', sans-serif;
+}
+
+.navbar {
+    background-color: #121212 !important;
+    border-bottom: 1px solid #d4af37;
+}
+
+.navbar-brand, .nav-link {
+    color: #d4af37 !important;
+}
+
+.btn-gold {
+    background: linear-gradient(135deg, #d4af37, #aa7c11);
+    color: #000;
+    font-weight: bold;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+    .btn-gold:hover {
+        background: linear-gradient(135deg, #f3e5ab, #d4af37);
+        color: #000;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4);
+    }
+
+.card-luxury {
+    background-color: #161616;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.form-control-luxury {
+    background-color: #222 !important;
+    border: 1px solid rgba(212, 175, 55, 0.4) !important;
+    color: #fff !important;
+}
+
+    .form-control-luxury:focus {
+        border-color: #d4af37 !important;
+        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25) !important;
+    }
+
+.table-luxury {
+    background-color: #161616 !important;
+    color: #fff !important;
+}
+
+    .table-luxury th {
+        color: #d4af37 !important;
+        border-bottom: 2px solid #d4af37 !important;
+    }

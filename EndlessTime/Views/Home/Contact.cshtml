@@ -1,0 +1,138 @@
+﻿@model EndlessTime.Model.Entities.ContactMessage
+
+@{
+    Layout = null;
+    var cartCookie = Context.Request.Cookies["EndlessTime_Cart"];
+    int cartCount = 0;
+    if (!string.IsNullOrEmpty(cartCookie))
+    {
+        cartCount = cartCookie.Split(',', StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Bize Ulaşın - Endless Time</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" />
+    <style>
+            body {
+                background-color: #080808;
+                color: #e5e5e5;
+                padding-top: 100px;
+            }
+
+            .navbar-luxury {
+                background-color: rgba(10, 10, 10, 0.95);
+                border-bottom: 2px solid #d4af37;
+                backdrop-filter: blur(10px);
+            }
+
+            .navbar-brand-lux {
+                font-family: Georgia, serif;
+                font-size: 1.8rem;
+                letter-spacing: 2px;
+                color: #d4af37 !important;
+                text-decoration: none;
+            }
+
+            .btn-gold-lux {
+                background: linear-gradient(135deg, #d4af37, #aa7c11);
+                color: #000 !important;
+                font-weight: bold;
+                border: none;
+            }
+
+            .contact-card {
+                background: rgba(22, 22, 22, 0.9);
+                border: 1px solid rgba(212, 175, 55, 0.3);
+                border-radius: 15px;
+                padding: 40px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            }
+
+            .form-control-luxury {
+                background-color: #1a1a1a !important;
+                border: 1px solid rgba(212,175,55,0.3) !important;
+                color: #fff !important;
+            }
+
+                .form-control-luxury:read-only {
+                    background-color: #111 !important;
+                    color: #888 !important;
+                    border-color: rgba(212,175,55,0.1) !important;
+                }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-luxury fixed-top py-3">
+        <div class="container">
+            <a class="navbar-brand-lux" href="/">ENDLESS TIME</a>
+            <div class="d-flex align-items-center gap-2 ms-auto">
+                <a href="/Home/About" class="btn btn-outline-warning">ℹ️ Hakkımızda</a>
+                <a href="/Home/Contact" class="btn btn-warning text-dark fw-bold">✉️ Bize Ulaşın</a>
+                <a href="/Cart/Index" class="btn btn-outline-light">🛒 Sepetim @(cartCount > 0 ? $"({cartCount})" : "")</a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a href="/Account/Profile" class="btn btn-outline-warning">👤 Profilim</a>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                    {
+                        <a href="/Admin/Product/Index" class="btn btn-gold-lux">⚙️ Admin</a>
+                    }
+                    <a href="/Account/Logout" class="btn btn-danger btn-sm">Çıkış 🔒</a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="contact-card">
+                    <h2 class="text-warning mb-4 text-center" style="font-family: Georgia, serif;">✉️ İletişim & Destek Formu</h2>
+                    <p class="text-muted text-center mb-4">Hoş geldiniz. Bilgileriniz otomatik doldurulmuştur. Şikayet veya mesajınızı yazıp gönderebilirsiniz.</p>
+
+                    @if (TempData["MessageSuccess"] != null)
+                    {
+                        <div class="alert alert-success bg-dark text-success border-success text-center">@TempData["MessageSuccess"]</div>
+                    }
+
+                    <form action="/Home/Contact" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="text-warning fw-bold mb-1">Adınız Soyadınız</label>
+                                <!-- Otomatik ve Readonly yapıldı 🚨 -->
+                                <input name="Name" value="@ViewBag.UserFullName" class="form-control form-control-luxury" readonly />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-warning fw-bold mb-1">E-Posta Adresiniz</label>
+                                <!-- Otomatik ve Readonly yapıldı 🚨 -->
+                                <input name="Email" value="@ViewBag.UserEmail" class="form-control form-control-luxury" readonly />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="text-warning fw-bold mb-1">Şikayet / Destek Konusu</label>
+                            <input name="Subject" class="form-control form-control-luxury" placeholder="Örn: Garanti süresi veya Kargo hk." required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="text-warning fw-bold mb-1">Mesajınız / Detaylar</label>
+                            <textarea name="MessageText" rows="5" class="form-control form-control-luxury" placeholder="Talebinizi buraya detaylıca yazınız..." required></textarea>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-lg w-100 text-dark fw-bold" style="background: linear-gradient(135deg, #d4af37, #aa7c11); border:none;">Destek Talebi Gönder 🚀</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

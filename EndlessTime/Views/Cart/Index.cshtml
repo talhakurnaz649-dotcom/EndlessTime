@@ -1,0 +1,73 @@
+﻿@model IEnumerable<EndlessTime.Model.Entities.Product>
+
+@{
+    ViewData["Title"] = "Sepetim";
+    decimal total = Model.Sum(p => p.Price);
+}
+
+<div class="container my-5">
+    <h2 class="text-warning mb-4" style="font-family: Georgia, serif;">Alışveriş Sepetim 🛒</h2>
+
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="card-luxury p-3">
+                @if (Model != null && Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-luxury align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Görsel</th>
+                                    <th>Ürün</th>
+                                    <th>Fiyat</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="@item.ImageUrl" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
+                                        </td>
+                                        <td>@item.Name</td>
+                                        <td class="text-warning">@item.Price.ToString("N2") TL</td>
+                                        <td>
+                                            <a href="/Cart/Remove?id=@item.Id" class="text-danger small" style="text-decoration:none;">Sepetten Çıkar ❌</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted p-4 text-center">Sepetinizde ürün bulunmamaktadır.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Sipariş Özeti ve Satın Al Butonu -->
+        <div class="col-md-4">
+            <div class="card-luxury p-4 text-center">
+                <h4 class="text-warning mb-3">Sipariş Özeti</h4>
+                <div class="d-flex justify-content-between mb-4 border-bottom pb-2">
+                    <span>Toplam Tutar:</span>
+                    <span class="text-success fw-bold fs-5">@total.ToString("N2") TL</span>
+                </div>
+
+                @if (Model.Any())
+                {
+                    <!-- Doğrudan ödeme formuna (Checkout) yönlendiriyor -->
+                    <a href="/Cart/Checkout" class="btn btn-gold w-100 py-2 fs-5">Siparişi Tamamla 💳</a>
+                }
+                else
+                {
+                    <button class="btn btn-secondary w-100 py-2" disabled>Sepet Boş</button>
+                }
+                <a href="/Home" class="btn btn-outline-warning w-100 mt-3 py-2 btn-sm">Alışverişe Devam Et</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,422 @@
+﻿@model IEnumerable<EndlessTime.Model.Entities.Product>
+
+@{
+    Layout = null;
+    var featuredWatches = Model.Take(3).ToList();
+    var ordinaryWatches = Model.Skip(3).ToList();
+
+    var cartCookie = Context.Request.Cookies["EndlessTime_Cart"];
+    int cartCount = 0;
+    if (!string.IsNullOrEmpty(cartCookie))
+    {
+        cartCount = cartCookie.Split(',', StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Endless Time - Lüks Saat Butiği</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" />
+    <!-- Font Awesome -->
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+        background-color: #080808;
+        color: #e5e5e5;
+        font-family: 'Source Sans Pro', sans-serif;
+        padding-top: 80px;
+        }
+
+        .navbar-luxury {
+        background-color: rgba(10, 10, 10, 0.95);
+        border-bottom: 2px solid #d4af37;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .navbar-brand-lux {
+        font-family: Georgia, serif;
+        font-size: 1.8rem;
+        letter-spacing: 2px;
+        color: #d4af37 !important;
+        text-decoration: none;
+        }
+
+        .btn-gold-lux {
+        background: linear-gradient(135deg, #d4af37, #aa7c11);
+        color: #000 !important;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        }
+
+        .btn-gold-lux:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+        }
+
+        .carousel-item {
+        height: 550px;
+        background-color: #000;
+        }
+
+        .carousel-img-lux {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.55;
+        }
+
+        .carousel-caption-lux {
+        bottom: 30%;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9);
+        z-index: 10;
+        }
+
+        .carousel-title-lux {
+        font-family: Georgia, serif;
+        font-size: 3.5rem;
+        letter-spacing: 3px;
+        color: #fff;
+        }
+
+        .carousel-sub-lux {
+        color: #d4af37;
+        font-size: 1.5rem;
+        margin-bottom: 25px;
+        }
+
+        .filter-panel {
+        background-color: #121212;
+        border: 1px solid rgba(212, 175, 55, 0.25);
+        border-radius: 12px;
+        padding: 20px;
+        display: none;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .filter-title {
+        color: #d4af37;
+        font-size: 0.95rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        padding-bottom: 5px;
+        }
+
+        .filter-btn {
+        background-color: #1d1d1d;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin: 3px;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+        background-color: #d4af37;
+        color: #000;
+        border-color: #d4af37;
+        }
+
+        .watch-card {
+        background-color: #111;
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        }
+
+        .watch-card:hover {
+        transform: translateY(-5px);
+        border-color: #d4af37;
+        box-shadow: 0 8px 25px rgba(212, 175, 55, 0.15);
+        }
+
+        .price-tag {
+        color: #d4af37;
+        font-style: italic;
+        font-size: 1.3rem;
+        font-weight: bold;
+        }
+
+        .hover-gold:hover {
+        color: #d4af37 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SABİT ÜST MENÜ (NAVBAR) -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-luxury fixed-top py-3">
+        <div class="container">
+            <a class="navbar-brand-lux" href="/">ENDLESS TIME</a>
+
+            <div class="d-flex align-items-center gap-2 ms-auto">
+                <input type="text" id="searchInput" placeholder="Model ara..." class="form-control d-inline-block"
+                       style="max-width: 150px; background: #222; border: 1px solid #d4af37; color: #fff; font-size: 0.9rem;" oninput="applyFilters()" />
+
+                <a href="/Home/About" class="btn btn-outline-warning">ℹ️ Hakkımızda</a>
+
+                <!-- Bize Ulaşın Butonu Eklendi 🚨 -->
+                <a href="/Home/Contact" class="btn btn-outline-warning">✉️ Bize Ulaşın</a>
+
+                <button class="btn btn-outline-warning" onclick="toggleFilterPanel()">🔍 Filtrele</button>
+                <a href="/Cart/Index" class="btn btn-outline-light">
+                    🛒 Sepetim @(cartCount > 0 ? $"({cartCount})" : "")
+                </a>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a href="/Account/Profile" class="btn btn-outline-warning">👤 Profilim</a>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                    {
+                        <a href="/Admin/Product/Index" class="btn btn-gold-lux">⚙️ Admin</a>
+                    }
+                    <a href="/Account/Logout" class="btn btn-danger btn-sm">Çıkış 🔒</a>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="btn btn-gold-lux">Giriş Yap / Üye Ol 🔓</a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <!-- DİNAMİK YANDAN KAYAN AFİŞ -->
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" style="margin-top: -20px;">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+        </div>
+
+        <div class="carousel-inner">
+            <div class="carousel-item active" data-bs-interval="4000">
+                <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?q=80&w=1920" class="carousel-img-lux" alt="Endless Time Lüks Saat">
+                <div class="carousel-caption carousel-caption-lux text-center">
+                    <h1 class="carousel-title-lux">ENDLESS TIME</h1>
+                    <p class="carousel-sub-lux">Zamanın Ötesinde Bir Lüks Mirası</p>
+                    <a href="#portfolio" class="btn btn-warning btn-lg fw-bold px-4 py-3 text-dark btn-gold-lux">Koleksiyonu Keşfet ⌚</a>
+                </div>
+            </div>
+
+            <div class="carousel-item" data-bs-interval="4000">
+                <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=1920" class="carousel-img-lux" alt="El İşçiliği Saat">
+                <div class="carousel-caption carousel-caption-lux text-center">
+                    <h1 class="carousel-title-lux">EL İŞÇİLİĞİ</h1>
+                    <p class="carousel-sub-lux">Mekanik Hassasiyet ve Kusursuz Mühendislik</p>
+                    <a href="#portfolio" class="btn btn-warning btn-lg fw-bold px-4 py-3 text-dark btn-gold-lux">Mekanik Modeller</a>
+                </div>
+            </div>
+
+            <div class="carousel-item" data-bs-interval="4000">
+                <img src="https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?q=80&w=1920" class="carousel-img-lux" alt="Akıllı Saat Vitrini">
+                <div class="carousel-caption carousel-caption-lux text-center">
+                    <h1 class="carousel-title-lux">YENİ NESİL ARAYÜZ</h1>
+                    <p class="carousel-sub-lux">Zamanı Akıllı Teknolojilerle Keşfedin</p>
+                    <a href="#portfolio" class="btn btn-warning btn-lg fw-bold px-4 py-3 text-dark btn-gold-lux">Akıllı Koleksiyon</a>
+                </div>
+            </div>
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+
+    <!-- ANA İÇERİK ALANI -->
+    <div class="container my-5" id="portfolio">
+
+        <div class="filter-panel mb-5" id="filterPanel">
+            <div class="row">
+                <div class="col-md-5 mb-3">
+                    <div class="filter-title">Kategoriler</div>
+                    <button class="btn filter-btn active" onclick="filterCategory('all', this)">Tümü</button>
+                    <button class="btn filter-btn" onclick="filterCategory('1', this)">Otomatik</button>
+                    <button class="btn filter-btn" onclick="filterCategory('2', this)">Köstekli</button>
+                    <button class="btn filter-btn" onclick="filterCategory('3', this)">Spor</button>
+                    <button class="btn filter-btn" onclick="filterCategory('4', this)">Akıllı</button>
+                    <button class="btn filter-btn" onclick="filterCategory('5', this)">Kadın</button>
+                    <button class="btn filter-btn" onclick="filterCategory('6', this)">Erkek</button>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <div class="filter-title">Fiyat Aralığı</div>
+                    <button class="btn filter-btn active" onclick="filterPrice('all', this)">Tümü</button>
+                    <button class="btn filter-btn" onclick="filterPrice('low', this)">0 - 15.000 TL</button>
+                    <button class="btn filter-btn" onclick="filterPrice('mid', this)">15.000 - 100.000 TL</button>
+                    <button class="btn filter-btn" onclick="filterPrice('high', this)">100.000 TL +</button>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="filter-title">Renk Seçimi</div>
+                    <button class="btn filter-btn active" onclick="filterColor('all', this)">Tümü</button>
+                    <button class="btn filter-btn" onclick="filterColor('gold', this)">Altın/Gold</button>
+                    <button class="btn filter-btn" onclick="filterColor('black', this)">Siyah/Black</button>
+                    <button class="btn filter-btn" onclick="filterColor('blue', this)">Mavi/Blue</button>
+                    <button class="btn filter-btn" onclick="filterColor('silver', this)">Gümüş/Silver</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÖNERİLEN SAATLER -->
+        <div class="mb-5">
+            <h3 class="text-warning mb-4" style="font-family: Georgia, serif; border-left: 3px solid #d4af37; padding-left: 10px;">🌟 Haftanın Önerilen Saatleri</h3>
+            <div class="row g-4">
+                @foreach (var item in featuredWatches)
+                {
+                    <div class="col-md-4">
+                        <div class="watch-card p-3 text-center">
+                            <a href="/Home/Details/@item.Id">
+                                <img src="@item.ImageUrl" class="img-fluid rounded mb-3" style="height: 250px; width:100%; object-fit: cover;" alt="@item.Name" />
+                            </a>
+                            <h4 class="text-white">
+                                <a href="/Home/Details/@item.Id" class="text-white text-decoration-none hover-gold">@item.Name</a>
+                            </h4>
+                            <p class="text-muted small">@item.Description</p>
+
+                            @if (item.Stock > 0)
+                            {
+                                <div class="price-tag mb-3">@item.Price.ToString("N0") TL</div>
+                                <a href="/Cart/Add?id=@item.Id" class="btn btn-warning w-100 fw-bold">Sepete Ekle 🛒</a>
+                            }
+                            else
+                            {
+                                <div class="text-danger fw-bold mb-3 fs-5">Stokta Yok ❌</div>
+                                <button class="btn btn-danger w-100 fw-bold" disabled>Tükendi ❌</button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- TÜM KOLEKSİYON -->
+        <div>
+            <h3 class="text-warning mb-4" style="font-family: Georgia, serif; border-left: 3px solid #d4af37; padding-left: 10px;">⌚ Tüm Saat Koleksiyonumuz</h3>
+            <div class="row g-4" id="watchGrid">
+                @foreach (var item in ordinaryWatches)
+                {
+                    string colorAttr = "silver";
+                    if (item.Name.Contains("Gold") || item.Name.Contains("Altın")) colorAttr = "gold";
+                    else if (item.Name.Contains("Siyah") || item.Name.Contains("Siyah")) colorAttr = "black";
+                    else if (item.Name.Contains("Cocktail") || item.Name.Contains("Mavi")) colorAttr = "blue";
+
+                    <div class="col-md-4 watch-item-container" data-category="@item.CategoryId" data-price="@item.Price" data-color="@colorAttr">
+                        <div class="watch-card p-3 text-center">
+                            <a href="/Home/Details/@item.Id">
+                                <img src="@item.ImageUrl" class="img-fluid rounded mb-3" style="height: 250px; width:100%; object-fit: cover;" alt="@item.Name" />
+                            </a>
+                            <h5 class="text-white">
+                                <a href="/Home/Details/@item.Id" class="text-white text-decoration-none hover-gold">@item.Name</a>
+                            </h5>
+
+                            @if (item.Stock > 0)
+                            {
+                                <div class="price-tag mb-3">@item.Price.ToString("N0") TL</div>
+                                <a href="/Cart/Add?id=@item.Id" class="btn btn-sm btn-outline-warning w-100 fw-bold">Sepete Ekle 🛒</a>
+                            }
+                            else
+                            {
+                                <div class="text-danger fw-bold mb-3">Stokta Yok ❌</div>
+                                <button class="btn btn-sm btn-danger w-100 fw-bold" disabled>Tükendi ❌</button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-center bg-black text-white-50">
+        <div class="container px-4 px-lg-5">
+            <p class="text-muted small mb-0">Copyright &copy; Endless Time 2026</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- FİLTRELEME VE ARAMA MOTORU -->
+    <script>
+        let selectedCategory = 'all';
+        let selectedPriceRange = 'all';
+        let selectedColor = 'all';
+
+        function toggleFilterPanel() {
+        const panel = document.getElementById('filterPanel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function filterCategory(catId, btn) {
+        removeActiveState(btn);
+        selectedCategory = catId;
+        applyFilters();
+        }
+
+        function filterPrice(range, btn) {
+        removeActiveState(btn);
+        selectedPriceRange = range;
+        applyFilters();
+        }
+
+        function filterColor(color, btn) {
+        removeActiveState(btn);
+        selectedColor = color;
+        applyFilters();
+        }
+
+        function removeActiveState(btn) {
+        const siblings = btn.parentNode.querySelectorAll('.filter-btn');
+        siblings.forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        }
+
+        function applyFilters() {
+        const items = document.querySelectorAll('.watch-item-container');
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+        items.forEach(item => {
+        const cat = item.getAttribute('data-category');
+        const price = parseFloat(item.getAttribute('data-price'));
+        const color = item.getAttribute('data-color');
+        const name = item.querySelector('h5').innerText.toLowerCase();
+
+        let catMatch = (selectedCategory === 'all' || cat === selectedCategory);
+        let colorMatch = (selectedColor === 'all' || color === selectedColor);
+        let searchMatch = (searchQuery === '' || name.includes(searchQuery));
+
+        let priceMatch = false;
+        if (selectedPriceRange === 'all') {
+        priceMatch = true;
+        } else if (selectedPriceRange === 'low') {
+        priceMatch = (price <= 15000);
+        } else if (selectedPriceRange === 'mid') {
+        priceMatch = (price > 15000 && price <= 100000);
+        } else if (selectedPriceRange === 'high') {
+        priceMatch = (price > 100000);
+        }
+
+        if (catMatch && priceMatch && colorMatch && searchMatch) {
+        item.style.display = 'block';
+        } else {
+        item.style.display = 'none';
+        }
+        });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+﻿@model EndlessTime.Model.Entities.User
+
+@{
+    ViewData["Title"] = "EndlessTime - Giriş Yap";
+}
+
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-5">
+        <div class="card-luxury shadow-lg">
+            <h2 class="text-center mb-4" style="color: #d4af37; font-family: Georgia, serif;">ENDLESSTIME</h2>
+            <h5 class="text-center text-muted mb-4">Giriş Yapın</h5>
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group mb-3">
+                    <label class="control-label">E-posta</label>
+                    <input name="email" type="email" class="form-control form-control-luxury" required />
+                </div>
+                <div class="form-group mb-4">
+                    <label class="control-label">Şifre</label>
+                    <input name="password" type="password" class="form-control form-control-luxury" required />
+                </div>
+                <button type="submit" class="btn btn-gold w-100 py-2 mb-3">Giriş Yap</button>
+
+                <div class="text-center">
+                    <a href="/Account/Register" class="text-warning small" style="text-decoration: none;">Hesabınız yok mu? Hemen Üye Olun</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

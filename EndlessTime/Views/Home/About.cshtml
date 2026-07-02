@@ -1,0 +1,113 @@
+﻿@{
+    ViewData["Title"] = "Hakkımızda - Endless Time";
+
+    var cartCookie = Context.Request.Cookies["EndlessTime_Cart"];
+    int cartCount = 0;
+    if (!string.IsNullOrEmpty(cartCookie))
+    {
+        cartCount = cartCookie.Split(',', StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+}
+
+<style>
+    body {
+        background-color: #0b0b0b;
+        color: #e5e5e5;
+        padding-top: 80px;
+    }
+
+    .navbar-luxury {
+        background-color: rgba(10, 10, 10, 0.95);
+        border-bottom: 2px solid #d4af37;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .navbar-brand-lux {
+        font-family: Georgia, serif;
+        font-size: 1.8rem;
+        letter-spacing: 2px;
+        color: #d4af37 !important;
+        text-decoration: none;
+    }
+
+    .btn-gold-lux {
+        background: linear-gradient(135deg, #d4af37, #aa7c11);
+        color: #000 !important;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+    }
+
+    .about-card {
+        background: rgba(22, 22, 22, 0.9);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 15px;
+        padding: 45px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    }
+</style>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-luxury fixed-top py-3">
+    <div class="container">
+        <a class="navbar-brand-lux" href="/">ENDLESS TIME</a>
+        <div class="d-flex align-items-center gap-2 ms-auto">
+            <a href="/Home/About" class="btn btn-outline-warning">ℹ️ Hakkımızda</a>
+
+            <!-- Bize Ulaşın Butonu Eklendi 🚨 -->
+            <a href="/Home/Contact" class="btn btn-outline-warning">✉️ Bize Ulaşın</a>
+
+            <a href="/Cart/Index" class="btn btn-outline-light">
+                🛒 Sepetim @(cartCount > 0 ? $"({cartCount})" : "")
+            </a>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a href="/Account/Profile" class="btn btn-outline-warning">👤 Profilim</a>
+                @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                {
+                    <a href="/Admin/Product/Index" class="btn btn-gold-lux">⚙️ Admin</a>
+                }
+                <a href="/Account/Logout" class="btn btn-danger btn-sm">Çıkış 🔒</a>
+            }
+            else
+            {
+                <a href="/Account/Login" class="btn btn-gold-lux">Giriş Yap / Üye Ol 🔓</a>
+            }
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9">
+            <div class="about-card text-center">
+                <span style="font-size: 4rem;">🕰️</span>
+                <h1 class="text-warning my-4" style="font-family: Georgia, serif; letter-spacing: 2px;">ENDLESS TIME</h1>
+                <h5 class="text-muted mb-4"><em>Zamanın Ötesinde Bir Lüks Hikayesi</em></h5>
+
+                <hr style="border-color: rgba(212, 175, 55, 0.3); width: 60%; margin: 30px auto;" />
+
+                <p class="fs-5 leading-relaxed" style="text-align: justify; line-height: 1.8;">
+                    Endless Time, 2026 yılında lüks saat tutkunlarına en seçkin İsviçre ve Japon mekanik şaheserlerini sunmak amacıyla kurulmuştur.
+                    Amacımız, yalnızca zamanı gösteren araçlar satmak değil; bileğinizde taşıyacağınız bir sanat eserini, tarihi ve el işçiliği mirasını sizlerle buluşturmaktır.
+                    Koleksiyonumuzdaki her bir saat, estetik ve dayanıklılık standartlarını en üst düzeyde karşılayacak şekilde küratörlerimiz tarafından seçilmektedir.
+                </p>
+
+                <h4 class="text-warning mt-5 mb-3" style="font-family: Georgia, serif;"></h4>
+                <p class="text-white fs-6">
+                    <br />
+                    <strong>Geliştirici:</strong> Talha Kurnaz<br />
+                    <strong>Kurum :</strong> SOFTİTO
+                </p>
+
+                <div class="mt-5">
+                    <a href="/Home" class="btn px-5 py-2 text-dark font-weight-bold"
+                       style="background: linear-gradient(135deg, #d4af37, #aa7c11); border: none; border-radius: 6px; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4); text-decoration: none; display: inline-block;">
+                        Mağazaya Geri Dön 🏠
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

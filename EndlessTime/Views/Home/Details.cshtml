@@ -1,0 +1,261 @@
+﻿@model EndlessTime.Model.Entities.Product
+
+@{
+    ViewData["Title"] = Model.Name + " - Detaylar";
+    string origin = ViewBag.OriginCountry;
+
+    var cartCookie = Context.Request.Cookies["EndlessTime_Cart"];
+    int cartCount = 0;
+    if (!string.IsNullOrEmpty(cartCookie))
+    {
+        cartCount = cartCookie.Split(',', StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+}
+
+<style>
+    body {
+        background-color: #080808;
+        color: #e5e5e5;
+        font-family: 'Source Sans Pro', sans-serif;
+        padding-top: 80px;
+    }
+
+    .navbar-luxury {
+        background-color: rgba(10, 10, 10, 0.95);
+        border-bottom: 2px solid #d4af37;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .navbar-brand-lux {
+        font-family: Georgia, serif;
+        font-size: 1.8rem;
+        letter-spacing: 2px;
+        color: #d4af37 !important;
+        text-decoration: none;
+    }
+
+    .btn-gold-lux {
+        background: linear-gradient(135deg, #d4af37, #aa7c11);
+        color: #000 !important;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+    }
+
+    .detail-card {
+        background: rgba(22, 22, 22, 0.9);
+        border: 1px solid rgba(212, 175, 55, 0.25);
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        margin-top: 30px;
+    }
+
+    .product-img {
+        width: 100%;
+        max-height: 500px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 2px solid rgba(212, 175, 55, 0.3);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .badge-luxury {
+        background-color: rgba(212, 175, 55, 0.15);
+        color: #d4af37;
+        border: 1px solid #d4af37;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        border-radius: 20px;
+        display: inline-block;
+    }
+
+    .price-text {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #d4af37;
+        font-style: italic;
+        text-shadow: 1px 1px 2px #000;
+    }
+
+    .spec-item {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 12px 0;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .spec-label {
+        color: #888;
+        font-weight: 600;
+    }
+
+    .spec-value {
+        color: #fff;
+    }
+
+    .review-box {
+        background: rgba(30, 30, 30, 0.7);
+        border-left: 3px solid #d4af37;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .review-text-lux {
+        color: #f1d279 !important;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+</style>
+
+<!-- DETAY SAYFASI NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-luxury fixed-top py-3">
+    <div class="container">
+        <a class="navbar-brand-lux" href="/">ENDLESS TIME</a>
+        <div class="d-flex align-items-center gap-2 ms-auto">
+            <a href="/Home/About" class="btn btn-outline-warning">ℹ️ Hakkımızda</a>
+
+            <!-- Bize Ulaşın Butonu Eklendi 🚨 -->
+            <a href="/Home/Contact" class="btn btn-outline-warning">✉️ Bize Ulaşın</a>
+
+            <a href="/Cart/Index" class="btn btn-outline-light">
+                🛒 Sepetim @(cartCount > 0 ? $"({cartCount})" : "")
+            </a>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a href="/Account/Profile" class="btn btn-outline-warning">👤 Profilim</a>
+                @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                {
+                    <a href="/Admin/Product/Index" class="btn btn-gold-lux">⚙️ Admin</a>
+                }
+                <a href="/Account/Logout" class="btn btn-danger btn-sm">Çıkış 🔒</a>
+            }
+            else
+            {
+                <a href="/Account/Login" class="btn btn-gold-lux">Giriş Yap / Üye Ol 🔓</a>
+            }
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+
+    <div class="detail-card mb-5">
+        <div class="row g-5">
+            <div class="col-md-6 text-center">
+                <img src="@Model.ImageUrl" class="product-img img-fluid" alt="@Model.Name" />
+            </div>
+
+            <div class="col-md-6 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="mb-3">
+                        <span class="badge-luxury">⌚ Premium Koleksiyon</span>
+                    </div>
+
+                    <h1 class="text-white mb-2" style="font-family: Georgia, serif; letter-spacing: 1px;">@Model.Name</h1>
+                    <p class="text-muted fs-5 mb-4">@Model.Description</p>
+
+                    <div class="mb-4">
+                        @if (Model.Stock > 0)
+                        {
+                            <div class="price-text">@Model.Price.ToString("N0") TL</div>
+                        }
+                        else
+                        {
+                            <div class="text-danger fw-bold fs-2">Stokta Yok ❌</div>
+                        }
+                    </div>
+
+                    <div class="specs-table mb-4">
+                        <div class="spec-item">
+                            <span class="spec-label">🌍 Üretim Yeri / İthal Edilen Ülke</span>
+                            <span class="spec-value text-warning fw-bold">@origin</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">📦 Stok Durumu</span>
+                            @if (Model.Stock > 0)
+                            {
+                                <span class="spec-value text-success fw-bold">Aktif (@Model.Stock Adet Mevcut)</span>
+                            }
+                            else
+                            {
+                                <span class="spec-value text-danger fw-bold">Stokta Kalmadı ❌</span>
+                            }
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">⚙️ Mekanizma Türü</span>
+                            <span class="spec-value">Mekanik / Otomatik / Kalibre Sürücülü</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">💎 Cam & Malzeme Yapısı</span>
+                            <span class="spec-value">Çizilmez Çift Yönlü Safir Cam</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mt-4">
+                    <a href="/Home" class="btn btn-outline-secondary px-4 py-3 flex-grow-1">🏠 Vitrine Dön</a>
+
+                    @if (Model.Stock > 0)
+                    {
+                        <a href="/Cart/Add?id=@Model.Id" class="btn btn-warning px-5 py-3 flex-grow-1 fw-bold text-dark"
+                           style="background: linear-gradient(135deg, #d4af37, #aa7c11); border: none; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);">
+                            Sepete Ekle 🛒
+                        </a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-danger px-5 py-3 flex-grow-1 fw-bold" disabled>Tükendi ❌</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MÜŞTERİ YORUMLARI -->
+    <div class="detail-card">
+        <h3 class="text-warning mb-4" style="font-family: Georgia, serif; border-left: 3px solid #d4af37; padding-left: 10px;">💬 Ziyaretçi & Müşteri Değerlendirmeleri</h3>
+
+        <div class="row align-items-center mb-4">
+            <div class="col-md-3 text-center border-end border-secondary">
+                <h1 class="text-warning fw-bold display-4">4.9</h1>
+                <div class="text-warning mb-1">⭐⭐⭐⭐⭐</div>
+                <small class="text-muted">12 Satın Alım Değerlendirmesi</small>
+            </div>
+            <div class="col-md-9 ps-md-4">
+                <div class="text-warning mb-1">Paketleme Kalitesi: <strong class="text-white">%98</strong></div>
+                <div class="text-warning mb-1">Kargo Hızı: <strong class="text-white">%95</strong></div>
+                <div class="text-warning">Müşteri Memnuniyeti: <strong class="text-white">%100</strong></div>
+            </div>
+        </div>
+
+        <div class="reviews-list">
+            <div class="review-box">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="fw-bold text-warning">Ahmet Y. <small class="text-muted">(Doğrulanmış Müşteri)</small></span>
+                    <span class="text-warning">⭐⭐⭐⭐⭐</span>
+                </div>
+                <p class="m-0 review-text-lux">Mekanizması tek kelimeyle kusursuz. Kadranın ışık altındaki yansıması çok şık duruyor. Paketleme aşırı özenliydi, kendi özel ahşap kutusunda sertifikasıyla geldi.</p>
+            </div>
+
+            <div class="review-box">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="fw-bold text-warning">Mehmet K. <small class="text-muted">(Doğrulanmış Müşteri)</small></span>
+                    <span class="text-warning">⭐⭐⭐⭐⭐</span>
+                </div>
+                <p class="m-0 review-text-lux">Ciddi anlamda bir İsviçre şaheseri. Çelik kalitesi ve ağırlığı bilekte kendini hissettiriyor. İthal edilme süresi hızlıydı, 2 günde elime ulaştı. Teşekkürler.</p>
+            </div>
+
+            <div class="review-box">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="fw-bold text-warning">Selin A. <small class="text-muted">(Doğrulanmış Müşteri)</small></span>
+                    <span class="text-warning">⭐⭐⭐⭐☆</span>
+                </div>
+                <p class="m-0 review-text-lux">Eşime evlilik yıl dönümü hediyesi olarak aldım. Kordon boyutu tam oldu, tasarımı çok asil duruyor. Sadece kargo firması kutuyu biraz geç getirdi ama saat tek kelimeyle mükemmel.</p>
+            </div>
+        </div>
+    </div>
+
+</div>

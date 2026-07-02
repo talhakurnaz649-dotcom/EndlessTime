@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="EndlessTime.Data/EndlessTime.Data.csproj" />
+  <Project Path="EndlessTime.Model/EndlessTime.Model.csproj" />
+  <Project Path="EndlessTime/EndlessTime.csproj" />
+</Solution>
