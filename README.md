@@ -1,21 +1,21 @@
-﻿# EndlessTime - Zaman ve GÃ¶rev Takip Sistemi
+# EndlessTime - Zaman ve Görev Takip Sistemi
 
-EndlessTime, projelerdeki Ã§alÄ±ÅŸma sÃ¼relerini kaydetmek, gÃ¶revleri yÃ¶netmek ve Ã¼retkenliÄŸi artÄ±rmak amacÄ±yla geliÅŸtirilmiÅŸ Ã§ok katmanlÄ± bir web uygulamasÄ±dÄ±r.
+EndlessTime, projelerdeki çalışma sürelerini kaydetmek, görevleri yönetmek ve üretkenliği artırmak amacıyla geliştirilmiş çok katmanlı bir web uygulamasıdır.
 
-## ğŸš€ KullanÄ±lan Teknolojiler
-* **Mimari:** ASP.NET Core MVC (Ã‡ok KatmanlÄ± Mimari)
+## 🚀 Kullanılan Teknolojiler
+* **Mimari:** ASP.NET Core MVC (Çok Katmanlı Mimari)
 * **Katmanlar:**
-  * `EndlessTime` (ArayÃ¼z ve Denetleyici KatmanÄ±)
-  * `EndlessTime.Data` (Veri EriÅŸim ve Repository KatmanÄ±)
-  * `EndlessTime.Model` (VarlÄ±k ve Veri Modelleri KatmanÄ±)
-* **TasarÄ±m:** HTML, CSS, JavaScript, Bootstrap, Areas (Admin/User ayrÄ±mÄ±)
+  * `EndlessTime` (Arayüz ve Denetleyici Katmanı)
+  * `EndlessTime.Data` (Veri Erişim ve Repository Katmanı)
+  * `EndlessTime.Model` (Varlık ve Veri Modelleri Katmanı)
+* **Tasarım:** HTML, CSS, JavaScript, Bootstrap, Areas (Admin/User ayrımı)
 
-## âœ¨ Ã–zellikler / YapÄ±
-* Ã‡ok katmanlÄ± mimari (N-Tier Architecture) yapÄ±sÄ± ile sÃ¼rdÃ¼rÃ¼lebilir kod tabanÄ±.
-* Admin ve KullanÄ±cÄ± rolleri iÃ§in `Areas` modÃ¼lÃ¼ ile ayrÄ±lmÄ±ÅŸ kontrol panelleri.
-* GÃ¶rev atama, zaman Ã§izelgesi (timesheet) kaydetme ve Ã§alÄ±ÅŸma raporlarÄ±.
+## ✨ Özellikler / Yapı
+* Çok katmanlı mimari (N-Tier Architecture) yapısı ile sürdürülebilir kod tabanı.
+* Admin ve Kullanıcı rolleri için `Areas` modülü ile ayrılmış kontrol panelleri.
+* Görev atama, zaman çizelgesi (timesheet) kaydetme ve çalışma raporları.
 
-## ğŸ› ï¸ NasÄ±l Ã‡alÄ±ÅŸtÄ±rÄ±lÄ±r?
-1. `appsettings.json` dosyasÄ±ndan veritabanÄ± baÄŸlantÄ± dizesini gÃ¼ncelleyin.
-2. EF Core Migrations veya SQL Script yardÄ±mÄ±yla veritabanÄ±nÄ± oluÅŸturun.
-3. Projeyi Ã§alÄ±ÅŸtÄ±rÄ±p tarayÄ±cÄ±dan test edin.
+## 🛠️ Nasıl Çalıştırılır?
+1. `appsettings.json` dosyasından veritabanı bağlantı dizesini güncelleyin.
+2. EF Core Migrations veya SQL Script yardımıyla veritabanını oluşturun.
+3. Projeyi çalıştırıp tarayıcıdan test edin.
