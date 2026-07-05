@@ -1,4 +1,7 @@
-# EndlessTime - Zaman ve Görev Takip Sistemi
+﻿# EndlessTime - Zaman ve Görev Takip Sistemi
+
+![Proje ArayÃ¼zÃ¼](screenshot.jpg)
+
 
 EndlessTime, projelerdeki çalışma sürelerini kaydetmek, görevleri yönetmek ve üretkenliği artırmak amacıyla geliştirilmiş çok katmanlı bir web uygulamasıdır.
 
